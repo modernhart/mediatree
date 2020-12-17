@@ -21,11 +21,13 @@ function youtubeToMedia(req, res, next) {
 			.then(result => {
 				res.status(200).json({success: true, data})
 			})
-			.catch(err => {
-				res.status(400).json({success: false})
+			.catch(tagErr => {
+				console.log("tagErr", tagErr)
+				next(err)
 			})	
-		}).catch(err => {
-			res.status(400).json({success: false})
+		}).catch(ytdErr => {
+			console.log("ytdErr", ytdErr)
+			next(err)
 		})	
 	}
 }
