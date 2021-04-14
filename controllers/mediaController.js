@@ -1,4 +1,5 @@
 const Downloader = require("../lib/downloader");
+const generateVideo = require("../lib/videos");
 const NodeID3 = require('node-id3')
 const path = require('path')
 
@@ -80,6 +81,35 @@ function youtubePromise(videoId, fileName) {
 	});
 }
 
+async function convertVideo(req, res, next) {
+	const {link, nameType, fileName} = req.body;
+	const videos = await generateVideo(link, (nameType === "custom") ? fileName : null);
+	res.status(200).json({success: true, data: videos})
+}
+
+
+async function youtubeToVideo(filePath, tag, cover) {
+	const filepath = filePath
+	const {title, artist, album} = tag
+	const tags = {}
+	
+	if (title) {
+		tags['title'] = title
+	}
+	if (artist) {
+		tags['artist'] = artist
+	}
+	if (album) {
+		tags['album'] = album
+	}
+	if (cover) {
+		tags['APIC'] = path.resolve('./upload', cover)
+	}
+	
+	const success = await NodeID3.update(tags, filepath)
+	return success
+}
+
 
 function setCoverData(req, res, next) {
 	const {mediaPath} = req.body
@@ -94,7 +124,7 @@ function setCoverData(req, res, next) {
 
 function fileDownload(req, res, next) {
 	const {filename} = req.params
-	const file = path.resolve('./mp3', filename)
+	const file = path.resolve('./medias', filename)
 	res.download(file)
 }
 
@@ -102,5 +132,6 @@ module.exports = {
 	youtubeToMedia,
 	setCoverData,
 	fileDownload,
+	convertVideo,
 	youtubePromise
 }

@@ -22,7 +22,7 @@ app.use(cors())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/media', express.static('mp3'));
+app.use('/media', express.static('medias'));
 app.use('/cover', express.static('upload'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
